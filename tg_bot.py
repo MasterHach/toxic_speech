@@ -9,7 +9,7 @@ import io
 
 # Конфигурация
 BOT_TOKEN = ""
-SERVER_URL = "http://localhost:8000/save_text"
+SERVER_URL = "http://localhost:8000/analyze_text"
 
 
 FFMPEG_PATH = "C:\\Users\\Admin\\Documents\\ffmpeg-2025-10-27-git-68152978b5-full_build\\bin\\ffmpeg.exe"
@@ -48,24 +48,29 @@ class AudioToTextBot:
         )
     
     async def handle_voice_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Обработка голосовых сообщений"""
+        """Обработка голосовых сообщений с анализом"""
         try:
             await update.message.reply_text("🔄 Обрабатываю аудио сообщение...")
             
-            # Получаем файл голосового сообщения
+            # Конвертируем аудио в текст (твоя существующая функция)
             voice_file = await update.message.voice.get_file()
-            
-            # Конвертируем в текст
             text = await self.audio_to_text(voice_file.file_path)
             
             if text:
-                # Отправляем на сервер
-                success = await self.send_to_server(text, update.effective_user.id)
+                # Отправляем на сервер для анализа
+                analysis_result = await self.send_to_server(
+                    text, 
+                    update.effective_user.id,
+                    update.effective_user.username,
+                    update.message.chat_id
+                )
                 
-                if success:
-                    await update.message.reply_text(f"Распознанный текст:\n{text}")
+                if analysis_result:
+                    # Формируем красивый ответ
+                    response_message = self.format_analysis_response(text, analysis_result)
+                    await update.message.reply_text(response_message, parse_mode='HTML')
                 else:
-                    await update.message.reply_text("❌ Ошибка при сохранении на сервер")
+                    await update.message.reply_text("❌ Ошибка при анализе текста на сервере")
             else:
                 await update.message.reply_text("❌ Не удалось распознать текст")
                 
@@ -84,7 +89,7 @@ class AudioToTextBot:
                 success = await self.send_to_server(text, update.effective_user.id)
                 
                 if success:
-                    await update.message.reply_text(f"Распознанный текст:\n{text}")
+                    await update.message.reply_text(f"✅ Текст успешно сохранен!\n\n📝 Распознанный текст:\n{text}")
                 else:
                     await update.message.reply_text("❌ Ошибка при сохранении на сервер")
             else:
@@ -137,20 +142,55 @@ class AudioToTextBot:
             print(f"Error in audio_to_text: {e}")
             return None
     
-    async def send_to_server(self, text: str, user_id: int) -> bool:
-        """Отправляет текст на сервер"""
+    async def send_to_server(self, text: str, user_id: int, username: str, chat_id: int) -> dict:
+        """Отправляет текст на сервер для анализа"""
         try:
             data = {
                 "text": text,
-                "user_id": user_id
+                "user_id": user_id,
+                "username": username,
+                "chat_id": chat_id
             }
             
             response = requests.post(SERVER_URL, json=data)
-            return response.status_code == 200
             
+            if response.status_code == 200:
+                result = response.json()
+                return result.get('analysis', {})
+            else:
+                print(f"Server error: {response.status_code} - {response.text}")
+                return None
+                
         except Exception as e:
             print(f"Error sending to server: {e}")
-            return False
+            return None
+        
+    def format_analysis_response(self, text: str, analysis: dict) -> str:
+        """Форматирует ответ с анализом текста"""
+        # Эмодзи для разных уровней токсичности
+
+
+        toxic_label = analysis.get('toxicity_level', 'unknown')
+        if toxic_label == "0":
+            emoji = "🟢"
+        elif toxic_label == "1":
+            emoji = "🟡"
+        else:
+            emoji = "🔴"
+        
+        #emoji = toxicity_emojis.get(analysis.get('toxicity_level', 'unknown'), '⚪')
+        
+        response = f"""
+            {emoji} <b>Анализ текста завершен</b>
+
+            📝 <b>Распознанный текст:</b>
+            {text}
+
+            📊 <b>Результат анализа:</b>
+            • Уровень токсичности: <b>{analysis.get('toxicity_level', 'unknown')}</b>
+            • Категория: <b>{analysis.get('category', 'unknown')}</b>
+            """
+        return response
     
     def run(self):
         """Запускает бота"""
@@ -158,6 +198,7 @@ class AudioToTextBot:
         self.application.run_polling()
 
 if __name__ == "__main__":
+    # Замени на свой токен бота
     BOT_TOKEN = ""
     
     bot = AudioToTextBot()
