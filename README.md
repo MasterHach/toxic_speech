@@ -10,55 +10,55 @@
 
 Язык: английский
 
-Размер: 159571 строк, 2 колонки
-Пропуски: 0
-Дубликаты: 0
+Размер: 159571 строк, 2 колонки  
+Пропуски: 0  
+Дубликаты: 0  
 
 === РАСПРЕДЕЛЕНИЕ КЛАССОВ ===  
 Нейтральный: 143346 (89.8%)  
 Оскорбительный: 13238 (8.3%)  
 Токсичный: 2987 (1.9%)  
 
-Наблюдается сильный дисбаланс классов, будет исправлено весами
+Наблюдается сильный дисбаланс классов, будет исправлено весами  
 
-Методы классификации: 
-1) Logistic Regression, Naive Bayes, Random Forest
-2) Deep BiLSTM и Hybrid CNN-BiLSTM
-3) BERT + Finetuning
+Методы классификации:   
+1) Logistic Regression, Naive Bayes, Random Forest  
+2) Deep BiLSTM и Hybrid CNN-BiLSTM  
+3) BERT + Finetuning  
 
-Результаты обучения
+Результаты обучения  
 
-Logistic Regression  (лучшее из классики)
-Accuracy: 0.9380
-Macro F1: 0.6841
+Logistic Regression  (лучшее из классики)  
+Accuracy: 0.9380  
+Macro F1: 0.6841  
 
-Naive Bayes
-Accuracy: 0.9345
-Macro F1: 0.5945
+Naive Bayes  
+Accuracy: 0.9345  
+Macro F1: 0.5945  
 
-Random Forest
-Accuracy: 0.7400
-Macro F1: 0.5111
+Random Forest  
+Accuracy: 0.7400  
+Macro F1: 0.5111  
 
---------------------------
+--------------------------  
 
-Hybrid CNN-BiLSTM
-Лучшая точность: 0.9305
+Hybrid CNN-BiLSTM  
+Лучшая точность: 0.9305  
 
-Deep BiLSTM (лучшая)
-Лучшая точность: 0.9403
+Deep BiLSTM (лучшая)  
+Лучшая точность: 0.9403  
 
------------------------
+-----------------------  
 
-BERT + Finetuning
-Лучшая точность: 0.9398
+BERT + Finetuning  
+Лучшая точность: 0.9398  
 
-Для реализации были использованы
-1) тг бот - (библиотека telegram)
-2) опция конвератции аудиосообщения в текст (pydub, speech_recognition, ffmpeg)
-3) бэкэнд сервер (fastapi)
-4) заранее подготовленная модель для определения типа текста аудиосообщения (Deep BiLSTM)
+Для реализации были использованы  
+1) тг бот - (библиотека telegram)  
+2) опция конвератции аудиосообщения в текст (pydub, speech_recognition, ffmpeg)  
+3) бэкэнд сервер (fastapi)  
+4) заранее подготовленная модель для определения типа текста аудиосообщения (Deep BiLSTM)  
 
-ссылка на демонстацию: https://disk.yandex.ru/i/9AX8IVhpBHZcqA
+ссылка на демонстацию: https://disk.yandex.ru/i/9AX8IVhpBHZcqA  
 
 
